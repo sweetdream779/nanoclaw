@@ -125,11 +125,39 @@ Image vision and PDF reader work out of the box after `/setup` + `/add-telegram`
 ```bash
 brew install whisper-cpp ffmpeg
 mkdir -p data/models
-curl -L -o data/models/ggml-base.bin \
-  "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin"
+curl -L -o data/models/ggml-medium.bin \
+  "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-medium.bin"
 ```
 
 Then restart the service. See `/add-telegram-voice` skill for details and troubleshooting.
+
+### Whisper model selection
+
+Voice transcription uses [whisper.cpp](https://github.com/ggerganov/whisper.cpp) running locally on your machine — no API calls, no cost, full privacy. The default model is `medium`, which provides the best balance of accuracy and speed for non-English languages.
+
+| Model | Size | ~30s audio on Apple Silicon | Best for |
+|-------|------|----------------------------|----------|
+| `ggml-tiny.bin` | 75MB | <0.5s | English only, fastest |
+| `ggml-base.bin` | 148MB | <1s | English, basic multilingual |
+| `ggml-small.bin` | 466MB | ~1s | Good multilingual |
+| `ggml-medium.bin` | 1.5GB | ~2-3s | **Recommended** — accurate multilingual |
+| `ggml-large.bin` | 3GB | ~5-7s | Best accuracy, diminishing returns vs medium |
+
+To switch models, download the desired `.bin` file to `data/models/` and set `WHISPER_MODEL` in `.env`:
+
+```bash
+WHISPER_MODEL=data/models/ggml-small.bin
+```
+
+To force a specific language (improves accuracy), set `WHISPER_LANG` in `.env`:
+
+```bash
+WHISPER_LANG=ru   # Russian
+WHISPER_LANG=en   # English
+WHISPER_LANG=de   # German
+```
+
+All models are available at [huggingface.co/ggerganov/whisper.cpp](https://huggingface.co/ggerganov/whisper.cpp/tree/main).
 
 ## Customizing
 
