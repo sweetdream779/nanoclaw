@@ -323,7 +323,7 @@ export class TelegramChannel implements Channel {
         });
 
         logger.info(
-          { chatJid, sender: senderName },
+          { chatJid, sender: senderName, transcript },
           'Telegram voice message transcribed',
         );
         return;

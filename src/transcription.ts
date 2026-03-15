@@ -11,7 +11,8 @@ const execFileAsync = promisify(execFile);
 const WHISPER_BIN = process.env.WHISPER_BIN || 'whisper-cli';
 const WHISPER_MODEL =
   process.env.WHISPER_MODEL ||
-  path.join(process.cwd(), 'data', 'models', 'ggml-base.bin');
+  path.join(process.cwd(), 'data', 'models', 'ggml-medium.bin');
+const WHISPER_LANG = process.env.WHISPER_LANG || '';
 
 const FALLBACK_MESSAGE = '[Voice Message - transcription unavailable]';
 
@@ -41,14 +42,22 @@ export async function transcribeAudio(
 
     const { stdout } = await execFileAsync(
       WHISPER_BIN,
-      ['-m', WHISPER_MODEL, '-f', tmpWav, '--no-timestamps', '-nt'],
+      [
+        '-m', WHISPER_MODEL,
+        '-f', tmpWav,
+        '--no-timestamps', '-nt',
+        ...(WHISPER_LANG ? ['-l', WHISPER_LANG] : []),
+      ],
       { timeout: 60_000 },
     );
 
     const transcript = stdout.trim();
     if (!transcript) return null;
 
-    logger.info({ chars: transcript.length }, 'Transcribed voice message');
+    logger.info(
+      { chars: transcript.length, transcript },
+      'Transcribed voice message',
+    );
     return transcript;
   } catch (err) {
     logger.error({ err }, 'whisper.cpp transcription failed');

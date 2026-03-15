@@ -361,6 +361,9 @@ async function runQuery(
   const stream = new MessageStream();
   stream.push(prompt);
 
+  // Log the prompt so voice transcriptions and other input are visible
+  log(`Prompt:\n${prompt}`);
+
   // Load image attachments and send as multimodal content blocks
   if (containerInput.imageAttachments?.length) {
     const blocks: ContentBlock[] = [];
@@ -396,7 +399,7 @@ async function runQuery(
     }
     const messages = drainIpcInput();
     for (const text of messages) {
-      log(`Piping IPC message into active query (${text.length} chars)`);
+      log(`Piping IPC message into active query (${text.length} chars):\n${text}`);
       stream.push(text);
     }
     setTimeout(pollIpcDuringQuery, IPC_POLL_MS);
