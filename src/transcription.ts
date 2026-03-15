@@ -48,10 +48,7 @@ export async function transcribeAudio(
     const transcript = stdout.trim();
     if (!transcript) return null;
 
-    logger.info(
-      { chars: transcript.length },
-      'Transcribed voice message',
-    );
+    logger.info({ chars: transcript.length }, 'Transcribed voice message');
     return transcript;
   } catch (err) {
     logger.error({ err }, 'whisper.cpp transcription failed');
