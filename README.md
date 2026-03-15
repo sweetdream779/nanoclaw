@@ -109,6 +109,28 @@ From the main channel (your self-chat), you can manage groups and tasks:
 @Andy join the Family Chat group
 ```
 
+## Telegram Features
+
+This fork includes Telegram support with the following capabilities built in:
+
+| Feature | Description |
+|---------|-------------|
+| **Text messages** | Full text messaging with trigger pattern support |
+| **Image vision** | Photos are downloaded, resized, and sent to the agent as multimodal content blocks — the agent can see and understand images |
+| **PDF reader** | PDFs are downloaded to `attachments/`, the agent can extract text via `pdf-reader` CLI (poppler-utils) |
+| **Voice transcription** | Voice messages are transcribed locally via [whisper.cpp](https://github.com/ggerganov/whisper.cpp) — no API key, no cost |
+
+Image vision and PDF reader work out of the box after `/setup` + `/add-telegram`. Voice transcription requires additional system dependencies:
+
+```bash
+brew install whisper-cpp ffmpeg
+mkdir -p data/models
+curl -L -o data/models/ggml-base.bin \
+  "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin"
+```
+
+Then restart the service. See `/add-telegram-voice` skill for details and troubleshooting.
+
 ## Customizing
 
 NanoClaw doesn't use configuration files. To make changes, just tell Claude Code what you want:

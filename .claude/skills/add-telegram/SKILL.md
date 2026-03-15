@@ -7,6 +7,16 @@ description: Add Telegram as a channel. Can replace WhatsApp entirely or run alo
 
 This skill adds Telegram support to NanoClaw, then walks through interactive setup.
 
+## Included Features
+
+This fork comes with the following Telegram features already built in:
+
+- **Image vision** — photos are downloaded, resized with sharp, and passed to the agent as multimodal content blocks (the agent can see and understand images)
+- **PDF reader** — PDFs are downloaded to `attachments/`, the agent extracts text via `pdf-reader` CLI (poppler-utils in the container)
+- **Voice transcription** — voice messages are transcribed locally via whisper.cpp (requires separate setup, see `/add-telegram-voice`)
+
+These features activate automatically when Telegram is set up — no additional skills needed (except voice transcription which requires whisper.cpp and a model file).
+
 ## Phase 1: Pre-flight
 
 ### Check if already applied
