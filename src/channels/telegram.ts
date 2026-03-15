@@ -215,12 +215,14 @@ export class TelegramChannel implements Channel {
         const fileUrl = `https://api.telegram.org/file/bot${this.botToken}/${file.file_path}`;
 
         const buffer = await new Promise<Buffer>((resolve, reject) => {
-          https.get(fileUrl, (res) => {
-            const chunks: Buffer[] = [];
-            res.on('data', (chunk: Buffer) => chunks.push(chunk));
-            res.on('end', () => resolve(Buffer.concat(chunks)));
-            res.on('error', reject);
-          }).on('error', reject);
+          https
+            .get(fileUrl, (res) => {
+              const chunks: Buffer[] = [];
+              res.on('data', (chunk: Buffer) => chunks.push(chunk));
+              res.on('end', () => resolve(Buffer.concat(chunks)));
+              res.on('error', reject);
+            })
+            .on('error', reject);
         });
 
         const groupDir = resolveGroupFolderPath(group.folder);
@@ -283,12 +285,14 @@ export class TelegramChannel implements Channel {
           const fileUrl = `https://api.telegram.org/file/bot${this.botToken}/${file.file_path}`;
 
           const buffer = await new Promise<Buffer>((resolve, reject) => {
-            https.get(fileUrl, (res) => {
-              const chunks: Buffer[] = [];
-              res.on('data', (chunk: Buffer) => chunks.push(chunk));
-              res.on('end', () => resolve(Buffer.concat(chunks)));
-              res.on('error', reject);
-            }).on('error', reject);
+            https
+              .get(fileUrl, (res) => {
+                const chunks: Buffer[] = [];
+                res.on('data', (chunk: Buffer) => chunks.push(chunk));
+                res.on('end', () => resolve(Buffer.concat(chunks)));
+                res.on('error', reject);
+              })
+              .on('error', reject);
           });
 
           const groupDir = resolveGroupFolderPath(group.folder);
