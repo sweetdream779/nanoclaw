@@ -43,9 +43,12 @@ export async function transcribeAudio(
     const { stdout } = await execFileAsync(
       WHISPER_BIN,
       [
-        '-m', WHISPER_MODEL,
-        '-f', tmpWav,
-        '--no-timestamps', '-nt',
+        '-m',
+        WHISPER_MODEL,
+        '-f',
+        tmpWav,
+        '--no-timestamps',
+        '-nt',
         ...(WHISPER_LANG ? ['-l', WHISPER_LANG] : []),
       ],
       { timeout: 60_000 },
