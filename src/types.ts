@@ -89,9 +89,16 @@ export interface Channel {
   // Optional: typing indicator. Channels that support it implement it.
   setTyping?(jid: string, isTyping: boolean): Promise<void>;
   // Optional: send a message and return its ID for later editing/deletion.
-  sendTrackedMessage?(jid: string, text: string): Promise<number | string | null>;
+  sendTrackedMessage?(
+    jid: string,
+    text: string,
+  ): Promise<number | string | null>;
   // Optional: edit a previously sent message by ID.
-  editMessage?(jid: string, messageId: number | string, text: string): Promise<void>;
+  editMessage?(
+    jid: string,
+    messageId: number | string,
+    text: string,
+  ): Promise<void>;
   // Optional: delete a previously sent message by ID.
   deleteMessage?(jid: string, messageId: number | string): Promise<void>;
   // Optional: sync group/chat names from the platform.

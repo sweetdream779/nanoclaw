@@ -506,7 +506,11 @@ export class TelegramChannel implements Channel {
     }
   }
 
-  async editMessage(jid: string, messageId: number | string, text: string): Promise<void> {
+  async editMessage(
+    jid: string,
+    messageId: number | string,
+    text: string,
+  ): Promise<void> {
     if (!this.bot) return;
     try {
       const numericId = jid.replace(/^tg:/, '');

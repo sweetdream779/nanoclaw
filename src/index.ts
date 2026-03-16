@@ -245,7 +245,8 @@ async function processGroupMessages(chatJid: string): Promise<boolean> {
 
   const updateStatus = async (thinkingLabel: string) => {
     const colonIdx = thinkingLabel.indexOf(':');
-    const toolName = colonIdx >= 0 ? thinkingLabel.slice(0, colonIdx) : thinkingLabel;
+    const toolName =
+      colonIdx >= 0 ? thinkingLabel.slice(0, colonIdx) : thinkingLabel;
     const detail = colonIdx >= 0 ? thinkingLabel.slice(colonIdx + 1) : '';
 
     const emoji = TOOL_EMOJI[toolName] || '\u{2699}\u{FE0F}';
@@ -255,7 +256,9 @@ async function processGroupMessages(chatJid: string): Promise<boolean> {
       .replace(/^\/workspace\/extra\//, '')
       .replace(/^\/workspace\/group\//, '');
 
-    const line = shortDetail ? `${emoji} ${verb} \`${shortDetail}\`` : `${emoji} ${verb}`;
+    const line = shortDetail
+      ? `${emoji} ${verb} \`${shortDetail}\``
+      : `${emoji} ${verb}`;
     statusLines.push(line);
     const display = statusLines.slice(-4).join('\n');
 
@@ -267,7 +270,10 @@ async function processGroupMessages(chatJid: string): Promise<boolean> {
   };
 
   if (channel.sendTrackedMessage) {
-    statusMsgId = await channel.sendTrackedMessage(chatJid, '\u{23F3} Starting...');
+    statusMsgId = await channel.sendTrackedMessage(
+      chatJid,
+      '\u{23F3} Starting...',
+    );
   }
 
   const clearStatus = async () => {
