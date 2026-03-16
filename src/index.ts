@@ -210,9 +210,72 @@ async function processGroupMessages(chatJid: string): Promise<boolean> {
     }, IDLE_TIMEOUT);
   };
 
-  await channel.setTyping?.(chatJid, true);
   let hadError = false;
   let outputSentToUser = false;
+
+  // Thinking status indicator — shows what the agent is doing in real-time
+  const TOOL_EMOJI: Record<string, string> = {
+    Read: '\u{1F4D6}',
+    Write: '\u{270F}\u{FE0F}',
+    Edit: '\u{270F}\u{FE0F}',
+    Bash: '\u{1F4BB}',
+    Glob: '\u{1F50D}',
+    Grep: '\u{1F50D}',
+    WebSearch: '\u{1F310}',
+    WebFetch: '\u{1F310}',
+    Agent: '\u{1F916}',
+    Task: '\u{2699}\u{FE0F}',
+    TeamCreate: '\u{1F465}',
+  };
+  const TOOL_VERB: Record<string, string> = {
+    Read: 'Reading',
+    Write: 'Writing',
+    Edit: 'Editing',
+    Bash: 'Running',
+    Glob: 'Searching',
+    Grep: 'Searching',
+    WebSearch: 'Searching web',
+    WebFetch: 'Fetching',
+    Agent: 'Subagent',
+    Task: 'Task',
+    TeamCreate: 'Creating team',
+  };
+  let statusMsgId: number | string | null = null;
+  let statusLines: string[] = [];
+
+  const updateStatus = async (thinkingLabel: string) => {
+    const colonIdx = thinkingLabel.indexOf(':');
+    const toolName = colonIdx >= 0 ? thinkingLabel.slice(0, colonIdx) : thinkingLabel;
+    const detail = colonIdx >= 0 ? thinkingLabel.slice(colonIdx + 1) : '';
+
+    const emoji = TOOL_EMOJI[toolName] || '\u{2699}\u{FE0F}';
+    const verb = TOOL_VERB[toolName] || toolName;
+
+    const shortDetail = detail
+      .replace(/^\/workspace\/extra\//, '')
+      .replace(/^\/workspace\/group\//, '');
+
+    const line = shortDetail ? `${emoji} ${verb} \`${shortDetail}\`` : `${emoji} ${verb}`;
+    statusLines.push(line);
+    const display = statusLines.slice(-4).join('\n');
+
+    if (!statusMsgId && channel.sendTrackedMessage) {
+      statusMsgId = await channel.sendTrackedMessage(chatJid, display);
+    } else if (statusMsgId && channel.editMessage) {
+      await channel.editMessage(chatJid, statusMsgId, display);
+    }
+  };
+
+  if (channel.sendTrackedMessage) {
+    statusMsgId = await channel.sendTrackedMessage(chatJid, '\u{23F3} Starting...');
+  }
+
+  const clearStatus = async () => {
+    if (statusMsgId && channel.deleteMessage) {
+      await channel.deleteMessage(chatJid, statusMsgId);
+      statusMsgId = null;
+    }
+  };
 
   const output = await runAgent(
     group,
@@ -220,8 +283,15 @@ async function processGroupMessages(chatJid: string): Promise<boolean> {
     chatJid,
     imageAttachments,
     async (result) => {
+      // Thinking status update — show what tool the agent is using
+      if (result.thinking && !result.result) {
+        await updateStatus(result.thinking);
+        return;
+      }
+
       // Streaming output callback — called for each agent result
       if (result.result) {
+        await clearStatus();
         const raw =
           typeof result.result === 'string'
             ? result.result
@@ -250,6 +320,7 @@ async function processGroupMessages(chatJid: string): Promise<boolean> {
     },
   );
 
+  await clearStatus();
   await channel.setTyping?.(chatJid, false);
   if (idleTimer) clearTimeout(idleTimer);
 

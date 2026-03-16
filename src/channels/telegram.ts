@@ -493,6 +493,38 @@ export class TelegramChannel implements Channel {
       logger.debug({ jid, err }, 'Failed to send Telegram typing indicator');
     }
   }
+
+  async sendTrackedMessage(jid: string, text: string): Promise<number | null> {
+    if (!this.bot) return null;
+    try {
+      const numericId = jid.replace(/^tg:/, '');
+      const msg = await this.bot.api.sendMessage(numericId, text);
+      return msg.message_id;
+    } catch (err) {
+      logger.debug({ jid, err }, 'Failed to send tracked Telegram message');
+      return null;
+    }
+  }
+
+  async editMessage(jid: string, messageId: number | string, text: string): Promise<void> {
+    if (!this.bot) return;
+    try {
+      const numericId = jid.replace(/^tg:/, '');
+      await this.bot.api.editMessageText(numericId, Number(messageId), text);
+    } catch (err) {
+      logger.debug({ jid, err }, 'Failed to edit Telegram message');
+    }
+  }
+
+  async deleteMessage(jid: string, messageId: number | string): Promise<void> {
+    if (!this.bot) return;
+    try {
+      const numericId = jid.replace(/^tg:/, '');
+      await this.bot.api.deleteMessage(numericId, Number(messageId));
+    } catch (err) {
+      logger.debug({ jid, err }, 'Failed to delete Telegram message');
+    }
+  }
 }
 
 registerChannel('telegram', (opts: ChannelOpts) => {
